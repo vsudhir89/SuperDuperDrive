@@ -23,6 +23,11 @@ public class SuperDuperDriveSecurityConfig extends WebSecurityConfigurerAdapter 
 
       http.formLogin()
               .loginPage("/login")
+              .permitAll()
+              .failureUrl("/login-error")
+              .and()
+              .logout()
+              .logoutSuccessUrl("/logout")
               .permitAll();
 
       http.formLogin()
