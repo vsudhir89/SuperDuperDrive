@@ -30,27 +30,42 @@ public class SignupPage {
     @FindBy(id = "error-msg")
     private WebElement signupErrorText;
 
+    @FindBy(id = "login-link")
+    private WebElement loginButton;
+
     public SignupPage(WebDriver driver) {
 	PageFactory.initElements(driver, this);
     }
 
     public boolean isFirstNameFieldVisible() {
-        return firstNameField.isDisplayed();
+	return firstNameField.isDisplayed();
     }
 
-    public void signupUser(String firstName, String lastName, String username, String password) {
-        this.firstNameField.sendKeys(firstName);
-        this.lastNameField.sendKeys(lastName);
-        this.usernameField.sendKeys(username);
-        this.passwordField.sendKeys(password);
-        this.submitButton.click();
+    public SignupPage signupUser(String firstName, String lastName, String username, String password) {
+	this.firstNameField.sendKeys(firstName);
+	this.lastNameField.sendKeys(lastName);
+	this.usernameField.sendKeys(username);
+	this.passwordField.sendKeys(password);
+	this.submitButton.click();
+	return this;
     }
 
     public boolean isSignupSuccessful() {
-        return signupSuccessText.isDisplayed();
+	return signupSuccessText.isDisplayed();
     }
 
     public boolean isUsernameAlreadyExistsErrorMessageShown() {
-        return signupErrorText.getText().equals(USERNAME_ALREADY_EXISTS);
+	return signupErrorText.getText().equals(USERNAME_ALREADY_EXISTS);
+    }
+
+    public void clickLoginButton() {
+	loginButton.click();
+    }
+
+    public SignupPage signupWithDefaultUser() {
+	return signupUser("Sudhir",
+		"Vaidya",
+		"sudhirv89",
+		"sudhir");
     }
 }

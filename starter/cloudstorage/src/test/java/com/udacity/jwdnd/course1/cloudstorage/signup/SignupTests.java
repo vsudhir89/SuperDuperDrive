@@ -41,13 +41,6 @@ public class SignupTests {
 	}
     }
 
-    public void signupWithDefaultUser() {
-	signupPage.signupUser("Sudhir",
-		"Vaidya",
-		"sudhirv89",
-		"sudhir");
-    }
-
     @Test
     public void getSignupPage() {
 	assertEquals("Sign Up", driver.getTitle());
@@ -60,19 +53,30 @@ public class SignupTests {
 
     @Test
     public void testUserSignupSuccessful() {
-        signupWithDefaultUser();
+	signupPage.signupWithDefaultUser();
+	waitTwoSeconds();
 	assertTrue(signupPage.isSignupSuccessful());
     }
 
     @Test
     public void testUsernameAlreadyExistsErrorMessageShown() {
-	signupWithDefaultUser();
+	signupPage.signupWithDefaultUser();
+	waitTwoSeconds();
 	assertTrue(signupPage.isSignupSuccessful());
 
 	signupPage.signupUser("asdad",
 		"Vaiadasddya",
 		"sudhirv89",
 		"sudadasdhir");
+	waitTwoSeconds();
 	assertTrue(signupPage.isUsernameAlreadyExistsErrorMessageShown());
+    }
+
+    private void waitTwoSeconds() {
+	try {
+	    Thread.sleep(2000);
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
     }
 }
