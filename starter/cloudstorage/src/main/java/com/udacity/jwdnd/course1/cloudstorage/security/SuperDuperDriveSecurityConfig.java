@@ -12,6 +12,7 @@ public class SuperDuperDriveSecurityConfig extends WebSecurityConfigurerAdapter 
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+      // TODO: Remove h2 console configuration from prod
       http.authorizeRequests().antMatchers("/h2/**").permitAll()
               .and().csrf().ignoringAntMatchers("/h2/**")
               .and().headers().frameOptions().sameOrigin();
