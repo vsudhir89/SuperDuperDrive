@@ -32,7 +32,6 @@ public class SuperDuperDriveSecurityConfig extends WebSecurityConfigurerAdapter 
 
       http.formLogin()
               .defaultSuccessUrl("/home", true);
-      // TODO: check if there are any logout specific configs to be done
   }
 
   @Override
