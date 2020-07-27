@@ -1,34 +1,46 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
+import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.model.Note;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
 import com.udacity.jwdnd.course1.cloudstorage.services.CredentialService;
+import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
 import com.udacity.jwdnd.course1.cloudstorage.services.NoteService;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 @Controller
 public class HomeController {
 
+    public static final String SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER = "Something went wrong. Please try again later";
     private NoteService noteService;
     private CredentialService credentialService;
+    private FileService fileService;
 
-    public HomeController(NoteService noteService, CredentialService credentialService) {
+    public HomeController(NoteService noteService, CredentialService credentialService, FileService fileService) {
 	this.noteService = noteService;
 	this.credentialService = credentialService;
+	this.fileService = fileService;
     }
 
     @GetMapping("/home")
     public String getAllNotes(@AuthenticationPrincipal User user, Model model) {
 	int userId = user.getUserid();
 	populateHomePageData(model, userId);
-	// TODO: get files and credentials and add them to the model here and return /home
 	return "/home";
     }
 
@@ -38,6 +50,9 @@ public class HomeController {
 
 	List<Credential> credentialList = credentialService.getAllCredentials(userId);
 	model.addAttribute("credentials", credentialList);
+
+	List<File> filesList = fileService.getAllFilesForUser(userId);
+	model.addAttribute("files", filesList);
     }
 
     // ------------------------------------- Note -----------------------------------------------------------------
@@ -77,12 +92,12 @@ public class HomeController {
 		populateHomePageData(model, userId);
 	    } else {
 		// Something went wrong trying to update DB. Send error message
-		noteError = "Something went wrong. Please try again";
+		noteError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
 		model.addAttribute("noteUpdateError", noteError);
 	    }
 	} else {
 	    // Something went wrong trying to lookup DB. Send error message
-	    noteError = "Something went wrong. Please try again";
+	    noteError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
 	    model.addAttribute("noteUpdateError", noteError);
 	}
     }
@@ -95,6 +110,7 @@ public class HomeController {
 	    if (noteService.doesNoteExist(note.getNoteId())) {
 		int rowsDeleted = noteService.deleteNote(note.getNoteId());
 		if (rowsDeleted == 1) {
+		    model.addAttribute("noteDeleteSuccess", true);
 		    populateHomePageData(model, userId);
 		}
 	    } else {
@@ -104,7 +120,7 @@ public class HomeController {
 	    }
 	} else {
 	    // Note error populate
-	    noteDeleteError = "Something went wrong. Please try again";
+	    noteDeleteError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
 	    model.addAttribute("noteDeleteError", noteDeleteError);
 	}
 	return "/home";
@@ -137,7 +153,7 @@ public class HomeController {
 	    populateHomePageData(model, userId);
 	    model.addAttribute("unencryptedPwd", unencryptedPwd);
 	} else {
-	    model.addAttribute("credentialError", "Something went wrong. Please try again");
+	    model.addAttribute("credentialError", SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	}
     }
 
@@ -155,11 +171,11 @@ public class HomeController {
 		populateHomePageData(model, userId);
 		model.addAttribute("unencryptedPwd", unencryptedPwd);
 	    } else {
-		credentialError = "Something went wrong. Please try again later";
+		credentialError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
 		model.addAttribute("credentialError", credentialError);
 	    }
 	} else {
-	    credentialError = "Something went wrong. Please try again later";
+	    credentialError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
 	    model.addAttribute("credentialError", credentialError);
 	}
     }
@@ -173,14 +189,66 @@ public class HomeController {
 	    if (rowsAffected > 0) {
 		populateHomePageData(model, userId);
 	    } else {
-		credentialError = "Something went wrong. Please try again later";
+		credentialError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
 		model.addAttribute("credentialError", credentialError);
 	    }
 	} else {
-	    credentialError = "Something went wrong. Please try again later";
+	    credentialError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
 	    model.addAttribute("credentialError", credentialError);
 	}
 	return "/home";
     }
 
+
+    // ------------------------------------- Files -----------------------------------------------------------
+
+    @PostMapping("/home/files/upload")
+    public String uploadFile(@RequestParam("fileUpload") MultipartFile file, @AuthenticationPrincipal User user, Model model) throws IOException, SQLException {
+	int userId = user.getUserid();
+	String fileError;
+	File fileToUpload = null;
+	if (file != null && !file.isEmpty()) {
+	    // TODO: Check if file size is allowed and throw an exception
+	    try {
+		fileToUpload = new File(null, file.getOriginalFilename(), file.getContentType(), String.valueOf(file.getSize()), userId, file.getBytes());
+	    } catch (IOException e) {
+		fileError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
+		model.addAttribute("fileUploadError", fileError);
+		e.printStackTrace();
+	    }
+
+	    int rowsAffected = fileService.insertFile(fileToUpload);
+	    if (rowsAffected > 0) {
+		populateHomePageData(model, userId);
+		model.addAttribute("uploadSuccessful", true);
+		model.addAttribute("message", "upload successful!");
+	    } else {
+		fileError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
+		model.addAttribute("fileUploadError", fileError);
+	    }
+
+	} else {
+	    // File is empty. Send an error to the user
+	    fileError = "Looks like the file is empty. Please try uploading a valid file.";
+	    model.addAttribute("fileInvalidError", fileError);
+	}
+	return "/home";
+    }
+
+    @GetMapping("/home/downloadFile/")
+    public ResponseEntity<Resource> downloadFile(File file, @AuthenticationPrincipal User user, Model model) {
+	File fileToDownload = fileService.loadFileFromDb(file.getFileName());
+	if (fileToDownload != null) {
+	    ByteArrayResource resource = new ByteArrayResource(fileToDownload.getFileData());
+	    return ResponseEntity.ok()
+		    .header(HttpHeaders.CONTENT_DISPOSITION,
+			    "attachment; filename=" + fileToDownload.getFileName())
+		    .contentLength(resource.contentLength())
+		    .body(resource);
+	} else {
+	    model.addAttribute("fileDownloadFailed", "File could not be downloaded");
+	    populateHomePageData(model, user.getUserid());
+	}
+	return null;
+    }
 }
