@@ -28,6 +28,6 @@ public interface FileMapper {
 
 
     @Select("SELECT * FROM FILES where filename = #{fileName}")
-    File getFileByNameIfExists(String fileName);
+    File getFileByName(String fileName);
 
 }

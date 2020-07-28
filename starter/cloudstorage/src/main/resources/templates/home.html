@@ -189,13 +189,15 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="operationModalLabel">Operation Successful!</h5>
+                        <h5 class="modal-title" id="operationModalLabel" th:if="${fileOperationMessage}">Operation Successful!</h5>
+                        <h5 class="modal-title" id="duplicateOperationModalLabel" th:if="${duplicateFileName}">Operation Unsuccessful!!!!</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <p id="fileOperationMessageString" th:text="${fileOperationMessage}"></p>
+                        <p id="duplicateFileMessage" th:text="${duplicateFileOperationMessage}"></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -248,7 +250,8 @@
 
         <script th:inline="javascript">
               var isFileOperationSuccess = [[${fileOperationSuccess}]];
-              if (isFileOperationSuccess) {
+              var isDuplicateFile = [[${duplicateFileName}]];
+              if (isFileOperationSuccess || isDuplicateFile) {
                     (function (){
                         $('#fileOperationModal').modal('show');
                     })();

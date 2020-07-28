@@ -2,8 +2,6 @@ package com.udacity.jwdnd.course1.cloudstorage.services;
 
 import com.udacity.jwdnd.course1.cloudstorage.mapper.FileMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -77,6 +75,13 @@ public class FileService {
         return false;
     }
 
+    public boolean isFileNameUnique(String fileName) {
+        if (fileName != null && !fileName.isEmpty()) {
+            return fileMapper.getFileByName(fileName) == null;
+        }
+        return false;
+    }
+
     /**
      * Get file by its filename
      * @param fileName The name of the file that exists in the system
@@ -84,7 +89,7 @@ public class FileService {
      */
     public File loadFileFromDb(String fileName) {
         if (fileName != null && !fileName.isEmpty()) {
-            return fileMapper.getFileByNameIfExists(fileName);
+            return fileMapper.getFileByName(fileName);
         }
         return null;
     }

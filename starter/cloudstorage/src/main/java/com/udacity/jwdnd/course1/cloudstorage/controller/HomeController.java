@@ -203,19 +203,26 @@ public class HomeController {
 	File fileToUpload = null;
 	if (file != null && !file.isEmpty()) {
 	    // TODO: Check if file size is allowed and throw an exception
-	    try {
-		fileToUpload = new File(null, file.getOriginalFilename(), file.getContentType(), String.valueOf(file.getSize()), userId, file.getBytes());
-	    } catch (IOException e) {
-		model.addAttribute("fileUploadError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
-		e.printStackTrace();
-	    }
-	    int rowsAffected = fileService.insertFile(fileToUpload);
-	    if (rowsAffected > 0) {
-		populateHomePageData(model, userId);
-		model.addAttribute("fileOperationSuccess", true);
-		model.addAttribute("fileOperationMessage", Constants.FILE_UPLOAD_SUCCESSFUL);
+	    if (fileService.isFileNameUnique(file.getOriginalFilename())) {
+		try {
+		    fileToUpload = new File(null, file.getOriginalFilename(), file.getContentType(), String.valueOf(file.getSize()), userId, file.getBytes());
+		} catch (IOException e) {
+		    model.addAttribute("fileError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
+		    e.printStackTrace();
+		}
+		int rowsAffected = fileService.insertFile(fileToUpload);
+		if (rowsAffected > 0) {
+		    populateHomePageData(model, userId);
+		    model.addAttribute("fileOperationSuccess", true);
+		    model.addAttribute("fileOperationMessage", Constants.FILE_UPLOAD_SUCCESSFUL);
+		} else {
+		    model.addAttribute("fileUploadError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
+		}
 	    } else {
-		model.addAttribute("fileUploadError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
+		// Duplicate file name.
+		populateHomePageData(model, userId);
+		model.addAttribute("duplicateFileName", true);
+		model.addAttribute("duplicateFileOperationMessage", Constants.A_FILE_WITH_THAT_NAME_ALREADY_EXISTS_PLEASE_TRY_ANOTHER_FILE_OR_CHANGE_THE_FILENAME);
 	    }
 	} else {
 	    // File is empty. Send an error to the user

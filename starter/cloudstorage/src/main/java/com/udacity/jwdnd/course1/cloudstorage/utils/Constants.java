@@ -11,4 +11,5 @@ public class Constants {
     public static final String NOTE_DOES_NOT_EXIST_ERROR = "Looks like that note does not exist. Try deleting a valid note";
     public static final String NOTE_DELETED_SUCCESSFULLY = "Note deleted successfully!";
     public static final String NOTE_ADDED_SUCCESSFULLY = "Note Added Successfully!";
+    public static final String A_FILE_WITH_THAT_NAME_ALREADY_EXISTS_PLEASE_TRY_ANOTHER_FILE_OR_CHANGE_THE_FILENAME = "A file with that name already exists. Please try another file or change the filename";
 }
