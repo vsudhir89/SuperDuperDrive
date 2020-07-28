@@ -204,7 +204,6 @@ public class HomeController {
 	int userId = user.getUserid();
 	File fileToUpload = null;
 	if (file != null && !file.isEmpty()) {
-	    // TODO: Check if file size is allowed and throw an exception
 	    if (fileService.isFileNameUnique(file.getOriginalFilename())) {
 		try {
 		    fileToUpload = new File(null, file.getOriginalFilename(), file.getContentType(), String.valueOf(file.getSize()), userId, file.getBytes());
