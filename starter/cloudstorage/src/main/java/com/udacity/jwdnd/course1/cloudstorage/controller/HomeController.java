@@ -7,6 +7,7 @@ import com.udacity.jwdnd.course1.cloudstorage.model.User;
 import com.udacity.jwdnd.course1.cloudstorage.services.CredentialService;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
 import com.udacity.jwdnd.course1.cloudstorage.services.NoteService;
+import com.udacity.jwdnd.course1.cloudstorage.utils.Constants;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -20,13 +21,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 @Controller
 public class HomeController {
 
-    public static final String SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER = "Something went wrong. Please try again later";
     private NoteService noteService;
     private CredentialService credentialService;
     private FileService fileService;
@@ -75,6 +74,8 @@ public class HomeController {
 	note.setUserid(userId);
 	int rowsAdded = noteService.createNote(note);
 	if (rowsAdded > 0) {
+	    model.addAttribute("noteOperationSuccess", true);
+	    model.addAttribute("noteOperationMessage", Constants.NOTE_ADDED_SUCCESSFULLY);
 	    populateHomePageData(model, userId);
 	}
     }
@@ -92,36 +93,32 @@ public class HomeController {
 		populateHomePageData(model, userId);
 	    } else {
 		// Something went wrong trying to update DB. Send error message
-		noteError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
-		model.addAttribute("noteUpdateError", noteError);
+		model.addAttribute("noteUpdateError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	    }
 	} else {
 	    // Something went wrong trying to lookup DB. Send error message
-	    noteError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
-	    model.addAttribute("noteUpdateError", noteError);
+	    model.addAttribute("noteUpdateError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	}
     }
 
     @GetMapping("/home/deleteNote")
     public String deleteNote(Note note, @AuthenticationPrincipal User user, Model model) {
-	String noteDeleteError;
 	int userId = user.getUserid();
 	if (note != null) {
 	    if (noteService.doesNoteExist(note.getNoteId())) {
 		int rowsDeleted = noteService.deleteNote(note.getNoteId());
 		if (rowsDeleted == 1) {
-		    model.addAttribute("noteDeleteSuccess", true);
+		    model.addAttribute("noteOperationSuccess", true);
+		    model.addAttribute("noteOperationMessage", Constants.NOTE_DELETED_SUCCESSFULLY);
 		    populateHomePageData(model, userId);
 		}
 	    } else {
 		// The note doesn't exist or is already deleted. Send a message to the user
-		noteDeleteError = "Looks like that note does not exist. Try deleting a valid note";
-		model.addAttribute("noteDeleteError", noteDeleteError);
+		model.addAttribute("noteOperationMessage", Constants.NOTE_DOES_NOT_EXIST_ERROR);
 	    }
 	} else {
 	    // Note error populate
-	    noteDeleteError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
-	    model.addAttribute("noteDeleteError", noteDeleteError);
+	    model.addAttribute("noteOperationMessage", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	}
 	return "/home";
     }
@@ -151,14 +148,15 @@ public class HomeController {
 	int rowsAffected = credentialService.addCredential(credential);
 	if (rowsAffected > 0) {
 	    populateHomePageData(model, userId);
+	    model.addAttribute("credentialOperationSuccess", true);
+	    model.addAttribute("credentialOperationMessage", Constants.CREDENTIAL_ADDED_SUCCESSFULLY);
 	    model.addAttribute("unencryptedPwd", unencryptedPwd);
 	} else {
-	    model.addAttribute("credentialError", SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
+	    model.addAttribute("credentialError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	}
     }
 
     public void tryUpdateCredential(Credential credential, Model model, int userId) {
-	String credentialError;
 	String unencryptedPwd = credential.getPassword();
 	Credential credentialToUpdate = credentialService.getCredential(credential.getCredentialId());
 	if (credentialToUpdate != null) {
@@ -171,30 +169,27 @@ public class HomeController {
 		populateHomePageData(model, userId);
 		model.addAttribute("unencryptedPwd", unencryptedPwd);
 	    } else {
-		credentialError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
-		model.addAttribute("credentialError", credentialError);
+		model.addAttribute("credentialError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	    }
 	} else {
-	    credentialError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
-	    model.addAttribute("credentialError", credentialError);
+	    model.addAttribute("credentialError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	}
     }
 
     @GetMapping("/home/deleteCredential")
     public String deleteCredential(Credential credential, @AuthenticationPrincipal User user, Model model) {
-	String credentialError;
 	int userId = user.getUserid();
 	if (credentialService.doesCredentialExist(credential.getCredentialId())) {
 	    int rowsAffected = credentialService.deleteCredential(credential.getCredentialId());
 	    if (rowsAffected > 0) {
+		model.addAttribute("credentialOperationSuccess", true);
+		model.addAttribute("credentialOperationMessage", Constants.CREDENTIAL_DELETED_SUCCESSFULLY);
 		populateHomePageData(model, userId);
 	    } else {
-		credentialError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
-		model.addAttribute("credentialError", credentialError);
+		model.addAttribute("credentialError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	    }
 	} else {
-	    credentialError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
-	    model.addAttribute("credentialError", credentialError);
+	    model.addAttribute("credentialError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	}
 	return "/home";
     }
@@ -203,34 +198,28 @@ public class HomeController {
     // ------------------------------------- Files -----------------------------------------------------------
 
     @PostMapping("/home/files/upload")
-    public String uploadFile(@RequestParam("fileUpload") MultipartFile file, @AuthenticationPrincipal User user, Model model) throws IOException, SQLException {
+    public String uploadFile(@RequestParam("fileUpload") MultipartFile file, @AuthenticationPrincipal User user, Model model) {
 	int userId = user.getUserid();
-	String fileError;
 	File fileToUpload = null;
 	if (file != null && !file.isEmpty()) {
 	    // TODO: Check if file size is allowed and throw an exception
 	    try {
 		fileToUpload = new File(null, file.getOriginalFilename(), file.getContentType(), String.valueOf(file.getSize()), userId, file.getBytes());
 	    } catch (IOException e) {
-		fileError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
-		model.addAttribute("fileUploadError", fileError);
+		model.addAttribute("fileUploadError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 		e.printStackTrace();
 	    }
-
 	    int rowsAffected = fileService.insertFile(fileToUpload);
 	    if (rowsAffected > 0) {
 		populateHomePageData(model, userId);
-		model.addAttribute("uploadSuccessful", true);
-		model.addAttribute("message", "upload successful!");
+		model.addAttribute("fileOperationSuccess", true);
+		model.addAttribute("fileOperationMessage", Constants.FILE_UPLOAD_SUCCESSFUL);
 	    } else {
-		fileError = SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER;
-		model.addAttribute("fileUploadError", fileError);
+		model.addAttribute("fileUploadError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	    }
-
 	} else {
 	    // File is empty. Send an error to the user
-	    fileError = "Looks like the file is empty. Please try uploading a valid file.";
-	    model.addAttribute("fileInvalidError", fileError);
+	    model.addAttribute("fileInvalidError", Constants.FILE_EMPTY_ERROR_MESSAGE);
 	}
 	return "/home";
     }
@@ -250,5 +239,24 @@ public class HomeController {
 	    populateHomePageData(model, user.getUserid());
 	}
 	return null;
+    }
+
+    @GetMapping("/home/deleteFile")
+    public String deleteFile(File file, @AuthenticationPrincipal User user, Model model) {
+	int userId = user.getUserid();
+	int idOfFileToDelete = file.getFileId();
+	if (file.getFileId() != null && fileService.doesFileExist(idOfFileToDelete)) {
+	    int rowsAffected = fileService.deleteFile(idOfFileToDelete);
+	    if (rowsAffected == 1) {
+		populateHomePageData(model, userId);
+		model.addAttribute("fileOperationSuccess", true);
+		model.addAttribute("fileOperationMessage", Constants.FILE_DELETED_SUCCESSFULLY);
+	    } else {
+		model.addAttribute("fileError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
+	    }
+	} else {
+	    model.addAttribute("fileDoesNotExistError", Constants.THE_FILE_YOU_REQUESTED_TO_DELETE_DOES_NOT_EXIST);
+	}
+	return "/home";
     }
 }

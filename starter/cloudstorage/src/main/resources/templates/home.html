@@ -52,7 +52,7 @@
                                 <tr th:each="file : ${files}">
                                     <td>
                                         <a th:href="@{/home/downloadFile/(fileName=${file.fileName})}" target="_blank" class="btn btn-success">View</a>
-                                        <a  class="btn btn-danger">Delete</a>
+                                        <a  class="btn btn-danger" th:href="@{/home/deleteFile(fileId=${file.fileId})}">Delete</a>
                                     </td>
                                     <th th:text="${file.fileName}" scope="row">ExampleFile.txt</th>
                                 </tr>
@@ -185,10 +185,89 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="fileOperationModal" tabindex="-1" role="dialog" aria-labelledby="fileOperationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="operationModalLabel">Operation Successful!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="fileOperationMessageString" th:text="${fileOperationMessage}"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="noteOperationModal" tabindex="-1" role="dialog" aria-labelledby="noteOperationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="noteOperationModalLabel">Operation Successful!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="noteOperationMessageString" th:text="${noteOperationMessage}"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="credentialOperationModal" tabindex="-1" role="dialog" aria-labelledby="credentialOperationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="credentialOperationModalLabel">Operation Successful!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="credentialOperationMessageString" th:text="${credentialOperationMessage}"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <script th:src="@{/js/jquery-slim.min.js}"></script>
         <script th:src="@{/js/popper.min.js}"></script>
         <script th:src="@{/js/bootstrap.min.js}"></script>
+
+        <script th:inline="javascript">
+              var isFileOperationSuccess = [[${fileOperationSuccess}]];
+              if (isFileOperationSuccess) {
+                    (function (){
+                        $('#fileOperationModal').modal('show');
+                    })();
+              }
+
+              var isCredentialOperationSuccess = [[${credentialOperationSuccess}]];
+              if (isCredentialOperationSuccess) {
+                    ( function () {
+                        $('#credentialOperationModal').modal('show');
+                    })();
+              }
+
+              var isNoteOperationSuccess = [[${noteOperationSuccess}]];
+              if (isNoteOperationSuccess) {
+                    ( function () {
+                        $('#noteOperationModal').modal('show');
+                    })();
+              }
+        </script>
 
         <!--For opening the note modal-->
         <script type="text/javascript">
