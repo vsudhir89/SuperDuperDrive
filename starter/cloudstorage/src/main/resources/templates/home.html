@@ -244,6 +244,25 @@
             </div>
         </div>
 
+        <div class="modal fade" id="fileUploadOperationModal" tabindex="-1" role="dialog" aria-labelledby="fileUploadOperationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="fileUploadOperationModalLabel">Oops! </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="fileTooLargeTextMessage" th:text="${fileTooLargeMessage}"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script th:src="@{/js/jquery-slim.min.js}"></script>
         <script th:src="@{/js/popper.min.js}"></script>
         <script th:src="@{/js/bootstrap.min.js}"></script>
@@ -269,6 +288,13 @@
                     ( function () {
                         $('#noteOperationModal').modal('show');
                     })();
+              }
+              var isFileTooLarge = [[${fileSizeToUploadTooLarge}]];
+              if (isFileTooLarge) {
+                    console.log("File too large");
+                    ( function () {
+                            $('#fileUploadOperationModal').modal('show');
+                        })();
               }
         </script>
 

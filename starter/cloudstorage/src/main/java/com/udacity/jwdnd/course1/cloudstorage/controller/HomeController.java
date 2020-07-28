@@ -15,11 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
@@ -81,7 +84,6 @@ public class HomeController {
     }
 
     private void tryUpdateNote(Note note, @AuthenticationPrincipal User user, Model model, int userId) {
-	String noteError;
 	Note noteToUpdate = noteService.getNote(note.getNoteId());
 	if (noteToUpdate != null) {
 	    noteToUpdate.setNoteTitle(note.getNoteTitle());
