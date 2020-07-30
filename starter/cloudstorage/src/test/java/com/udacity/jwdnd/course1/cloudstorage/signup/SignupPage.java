@@ -31,7 +31,10 @@ public class SignupPage {
     private WebElement signupErrorText;
 
     @FindBy(id = "login-link")
-    private WebElement loginButton;
+    private WebElement loginLink;
+
+    @FindBy(id = "backToLoginLink")
+    private WebElement backToLoginLink;
 
     public SignupPage(WebDriver driver) {
 	PageFactory.initElements(driver, this);
@@ -58,8 +61,14 @@ public class SignupPage {
 	return signupErrorText.getText().equals(USERNAME_ALREADY_EXISTS);
     }
 
-    public void clickLoginButton() {
-	loginButton.click();
+    public SignupPage clickLoginLink() {
+	loginLink.click();
+	return this;
+    }
+
+    public SignupPage clickBackToLoginLink() {
+	backToLoginLink.click();
+	return this;
     }
 
     public SignupPage signupWithDefaultUser() {

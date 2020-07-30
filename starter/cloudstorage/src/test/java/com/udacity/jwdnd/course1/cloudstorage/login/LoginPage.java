@@ -1,6 +1,5 @@
 package com.udacity.jwdnd.course1.cloudstorage.login;
 
-import org.apache.juli.logging.Log;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -24,15 +23,15 @@ public class LoginPage {
     private WebElement signupLink;
 
     public WebElement getPasswordField() {
-        return passwordField;
+	return passwordField;
     }
 
     public WebElement getSubmitButton() {
-        return submitButton;
+	return submitButton;
     }
 
     public WebElement getErrorMessage() {
-        return errorMessage;
+	return errorMessage;
     }
 
     public LoginPage(WebDriver driver) {
@@ -40,26 +39,26 @@ public class LoginPage {
     }
 
     public boolean isLoginPageUsernameDisplayed() {
-        return usernameField.isDisplayed();
+	return usernameField.isDisplayed();
     }
 
     public LoginPage loginUser(String username, String password) {
-        this.usernameField.sendKeys(username);
-        this.passwordField.sendKeys(password);
-        submitButton.click();
-        return this;
+	this.usernameField.sendKeys(username);
+	this.passwordField.sendKeys(password);
+	submitButton.click();
+	return this;
     }
 
     public boolean isLoginErrorShown() {
-        return errorMessage.isDisplayed();
+	return errorMessage.isDisplayed();
     }
 
     public LoginPage clickSignupPage() {
-        signupLink.click();
-        return this;
+	signupLink.click();
+	return this;
     }
 
     public LoginPage loginWithDefaultUser() {
-        return loginUser("sudhirv89", "sudhir");
+	return loginUser("sudhirv89", "sudhir");
     }
 }

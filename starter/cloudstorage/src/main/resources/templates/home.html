@@ -12,7 +12,7 @@
         <div class="container">
             <div id="logoutDiv">
                 <form action="#" th:action="@{/logout}" method="POST">
-                    <button type="submit" class="btn btn-secondary float-right">Logout</button>
+                    <button id="logout-Button" type="submit" class="btn btn-secondary float-right">Logout</button>
                 </form>
             </div>
             <div id="contentDiv" style="clear: right;">
@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
-                        <button style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
+                        <button id="addNoteButton" style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
                             + Add a New Note
                         </button>
 
@@ -77,11 +77,11 @@
                                 <tbody>
                                     <tr th:each="note : ${allNotes}">
                                         <td>
-                                            <button type="button" class="btn btn-success" th:data-noteid="${note.noteId}" th:data-noteTitle="${note.noteTitle}" th:data-noteDesc="${note.noteDescription}" onclick="showNoteModal( this.getAttribute('data-noteid'), this.getAttribute('data-noteTitle'), this.getAttribute('data-noteDesc'))">Edit</button>
-                                            <a class="btn btn-danger" th:href="@{/home/deleteNote(noteId=${note.noteId})}" onclick="">Delete</a>
+                                            <button id="noteEditButton" type="button" class="btn btn-success" th:data-noteid="${note.noteId}" th:data-noteTitle="${note.noteTitle}" th:data-noteDesc="${note.noteDescription}" onclick="showNoteModal( this.getAttribute('data-noteid'), this.getAttribute('data-noteTitle'), this.getAttribute('data-noteDesc'))">Edit</button>
+                                            <a id="noteDeleteButton" class="btn btn-danger" th:href="@{/home/deleteNote(noteId=${note.noteId})}" onclick="">Delete</a>
                                         </td>
-                                        <th th:text="${note.noteTitle}" scope="row">Example Note Title</th>
-                                        <td th:text="${note.noteDescription}" >Example Note Description </td>
+                                        <th id="noteTitleText" th:text="${note.noteTitle}" scope="row">Example Note Title</th>
+                                        <td id="noteDescriptionText" th:text="${note.noteDescription}" >Example Note Description </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -111,8 +111,8 @@
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary" onclick="$('#noteSubmit').click();">Save changes</button>
+                                        <button id="noteChangesDismissButton" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button id="noteChangesSaveButton" type="button" class="btn btn-primary" onclick="$('#noteSubmit').click();">Save changes</button>
                                     </div>
                                 </div>
                             </div>
@@ -219,7 +219,7 @@
                         <p id="noteOperationMessageString" th:text="${noteOperationMessage}"></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="noteModalCloseButton" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

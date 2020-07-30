@@ -65,7 +65,7 @@ public class LoginTests {
 		"sudhirv89",
 		"sudhir");
 	waitTwoSeconds();
-	signupPage.clickLoginButton();
+	signupPage.clickLoginLink();
 	assertTrue(loginPage.isLoginPageUsernameDisplayed());
 
 	loginPage.loginWithDefaultUser();
@@ -83,11 +83,37 @@ public class LoginTests {
 		"sudhirv89",
 		"sudhir");
 	waitTwoSeconds();
-	signupPage.clickLoginButton();
+	signupPage.clickLoginLink();
+	waitTwoSeconds();
 	loginPage.loginUser("sudhirv89", "sudh");
 	waitTwoSeconds();
-
+	waitTwoSeconds();
 	assertTrue(loginPage.isLoginErrorShown());
+    }
+
+    @Test
+    public void testSuccessfulLogoutShowsLoginPage() {
+	loginPage.clickSignupPage();
+	waitTwoSeconds();
+
+	signupPage.signupUser("Sudhir",
+		"Vaidya",
+		"sudhirv89",
+		"sudhir");
+	waitTwoSeconds();
+
+	signupPage.clickLoginLink();
+	waitTwoSeconds();
+
+	loginPage.loginWithDefaultUser();
+	waitTwoSeconds();
+
+	assertTrue(homePage.isUploadButtonShown());
+
+	homePage.clickLogoutButton();
+	waitTwoSeconds();
+
+	assertTrue(loginPage.isLoginPageUsernameDisplayed());
     }
 
 
