@@ -5,6 +5,7 @@ import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.model.Note;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
 import com.udacity.jwdnd.course1.cloudstorage.services.CredentialService;
+import com.udacity.jwdnd.course1.cloudstorage.services.EncryptionService;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
 import com.udacity.jwdnd.course1.cloudstorage.services.NoteService;
 import com.udacity.jwdnd.course1.cloudstorage.utils.Constants;
@@ -24,6 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -32,11 +36,13 @@ public class HomeController {
     private NoteService noteService;
     private CredentialService credentialService;
     private FileService fileService;
+    private EncryptionService encryptionService;
 
-    public HomeController(NoteService noteService, CredentialService credentialService, FileService fileService) {
+    public HomeController(NoteService noteService, CredentialService credentialService, FileService fileService, EncryptionService encryptionService) {
 	this.noteService = noteService;
 	this.credentialService = credentialService;
 	this.fileService = fileService;
+	this.encryptionService = encryptionService;
     }
 
     @GetMapping("/home")
@@ -52,6 +58,9 @@ public class HomeController {
 
 	List<Credential> credentialList = credentialService.getAllCredentials(userId);
 	model.addAttribute("credentials", credentialList);
+
+	List<String> unencryptedPasswords = credentialService.getAllDecryptedPasswords(userId);
+	model.addAttribute("decryptedPasswords", unencryptedPasswords);
 
 	List<File> filesList = fileService.getAllFilesForUser(userId);
 	model.addAttribute("files", filesList);
@@ -145,21 +154,18 @@ public class HomeController {
     }
 
     public void tryAddCredential(Credential credential, Model model, int userId) {
-	String unencryptedPwd = credential.getPassword();
 	credential.setUserId(userId);
 	int rowsAffected = credentialService.addCredential(credential);
 	if (rowsAffected > 0) {
 	    populateHomePageData(model, userId);
 	    model.addAttribute("credentialOperationSuccess", true);
 	    model.addAttribute("credentialOperationMessage", Constants.CREDENTIAL_ADDED_SUCCESSFULLY);
-	    model.addAttribute("unencryptedPwd", unencryptedPwd);
 	} else {
 	    model.addAttribute("credentialError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	}
     }
 
     public void tryUpdateCredential(Credential credential, Model model, int userId) {
-	String unencryptedPwd = credential.getPassword();
 	Credential credentialToUpdate = credentialService.getCredential(credential.getCredentialId());
 	if (credentialToUpdate != null) {
 	    credentialToUpdate.setUrl(credential.getUrl());
@@ -169,7 +175,6 @@ public class HomeController {
 	    if (rowsAffected == 1) {
 		// Good to go
 		populateHomePageData(model, userId);
-		model.addAttribute("unencryptedPwd", unencryptedPwd);
 	    } else {
 		model.addAttribute("credentialError", Constants.SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_LATER);
 	    }

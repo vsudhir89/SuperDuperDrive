@@ -5,6 +5,7 @@ import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -94,12 +95,29 @@ public class CredentialService {
     }
 
     private void encryptPassword(Credential credential) {
-	SecureRandom random = new SecureRandom();
-	byte[] key = new byte[16];
-	random.nextBytes(key);
-	String encodedKey = Base64.getEncoder().encodeToString(key);
+	String encodedKey = getEncodedKey();
 	String encryptedPassword = encryptionService.encryptValue(credential.getPassword(), encodedKey);
 	credential.setKey(encodedKey);
 	credential.setPassword(encryptedPassword);
+    }
+
+    private String getEncodedKey() {
+	SecureRandom random = new SecureRandom();
+	byte[] key = new byte[16];
+	random.nextBytes(key);
+	return Base64.getEncoder().encodeToString(key);
+    }
+
+    public List<String> getAllDecryptedPasswords(Integer userId) {
+	List<Credential> credentialList = getAllCredentials(userId);
+	List<String> unencryptedPasswords = new ArrayList<>();
+	if (credentialList != null && !credentialList.isEmpty()) {
+	    for (Credential credential : credentialList) {
+		String encodedKey = credential.getKey();
+		unencryptedPasswords.add(encryptionService.decryptValue(credential.getPassword(), encodedKey));
+	    }
+	    return unencryptedPasswords;
+	}
+	return new ArrayList<>();
     }
 }
