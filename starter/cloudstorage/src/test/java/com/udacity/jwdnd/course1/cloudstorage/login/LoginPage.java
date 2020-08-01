@@ -53,7 +53,7 @@ public class LoginPage {
 	return errorMessage.isDisplayed();
     }
 
-    public LoginPage clickSignupPage() {
+    public LoginPage clickSignupLink() {
 	signupLink.click();
 	return this;
     }

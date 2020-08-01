@@ -1,10 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage.signup;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SignupTests {
 
     @LocalServerPort
@@ -42,16 +40,19 @@ public class SignupTests {
     }
 
     @Test
+    @Order(1)
     public void getSignupPage() {
 	assertEquals("Sign Up", driver.getTitle());
     }
 
     @Test
+    @Order(2)
     public void checkFirstNameFieldIsShown() {
 	assertTrue(signupPage.isFirstNameFieldVisible());
     }
 
     @Test
+    @Order(3)
     public void testUserSignupSuccessful() {
 	signupPage.signupWithDefaultUser();
 	waitTwoSeconds();
@@ -59,11 +60,8 @@ public class SignupTests {
     }
 
     @Test
+    @Order(4)
     public void testUsernameAlreadyExistsErrorMessageShown() {
-	signupPage.signupWithDefaultUser();
-	waitTwoSeconds();
-	assertTrue(signupPage.isSignupSuccessful());
-
 	signupPage.signupUser("asdad",
 		"Vaiadasddya",
 		"sudhirv89",

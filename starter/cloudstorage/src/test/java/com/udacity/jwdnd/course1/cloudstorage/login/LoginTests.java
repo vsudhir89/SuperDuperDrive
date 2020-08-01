@@ -3,18 +3,19 @@ package com.udacity.jwdnd.course1.cloudstorage.login;
 import com.udacity.jwdnd.course1.cloudstorage.home.HomePage;
 import com.udacity.jwdnd.course1.cloudstorage.signup.SignupPage;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LoginTests {
 
     @LocalServerPort
@@ -24,6 +25,7 @@ public class LoginTests {
     private LoginPage loginPage;
     private SignupPage signupPage;
     private HomePage homePage;
+    private WebDriverWait webDriverWait;
 
     @BeforeAll
     static void beforeAll() {
@@ -37,6 +39,7 @@ public class LoginTests {
 	loginPage = new LoginPage(driver);
 	signupPage = new SignupPage(driver);
 	homePage = new HomePage(driver);
+	webDriverWait = new WebDriverWait(driver, 5);
     }
 
     @AfterEach
@@ -55,10 +58,11 @@ public class LoginTests {
     }
 
     @Test
+    @Order(1)
     public void testLoginSuccessfulPostSignup() {
-        loginPage.clickSignupPage();
-        waitTwoSeconds();
-        assertTrue(signupPage.isFirstNameFieldVisible());
+	loginPage.clickSignupLink();
+	waitTwoSeconds();
+	assertTrue(signupPage.isFirstNameFieldVisible());
 
 	signupPage.signupUser("Sudhir",
 		"Vaidya",
@@ -66,6 +70,7 @@ public class LoginTests {
 		"sudhir");
 	waitTwoSeconds();
 	signupPage.clickLoginLink();
+	waitTwoSeconds();
 	assertTrue(loginPage.isLoginPageUsernameDisplayed());
 
 	loginPage.loginWithDefaultUser();
@@ -75,36 +80,16 @@ public class LoginTests {
     }
 
     @Test
-    public void testLoginUnsuccessfulPostSignup() {
-	loginPage.clickSignupPage();
-	waitTwoSeconds();
-	signupPage.signupUser("Sudhir",
-		"Vaidya",
-		"sudhirv89",
-		"sudhir");
-	waitTwoSeconds();
-	signupPage.clickLoginLink();
-	waitTwoSeconds();
+    @Order(2)
+    public void testLoginInvalidUsernameShownPostSignup() {
 	loginPage.loginUser("sudhirv89", "sudh");
-	waitTwoSeconds();
 	waitTwoSeconds();
 	assertTrue(loginPage.isLoginErrorShown());
     }
 
     @Test
+    @Order(3)
     public void testSuccessfulLogoutShowsLoginPage() {
-	loginPage.clickSignupPage();
-	waitTwoSeconds();
-
-	signupPage.signupUser("Sudhir",
-		"Vaidya",
-		"sudhirv89",
-		"sudhir");
-	waitTwoSeconds();
-
-	signupPage.clickLoginLink();
-	waitTwoSeconds();
-
 	loginPage.loginWithDefaultUser();
 	waitTwoSeconds();
 
@@ -116,5 +101,8 @@ public class LoginTests {
 	assertTrue(loginPage.isLoginPageUsernameDisplayed());
     }
 
+    private WebElement waitAndRetrieveWebElement(String s) {
+	return webDriverWait.until(webDriver -> webDriver.findElement(By.id(s)));
+    }
 
 }

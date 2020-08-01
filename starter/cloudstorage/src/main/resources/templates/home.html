@@ -160,16 +160,16 @@
                                         <form action="#" th:action="@{/home/addOrUpdateCredential}" method="POST">
                                             <input type="hidden" name="credentialId" id="credential-id">
                                             <div class="form-group">
-                                                <label for="note-title" class="col-form-label">URL</label>
+                                                <label for="credential-url" class="col-form-label">URL</label>
                                                 <input type="text" name= "url" class="form-control" id="credential-url" maxlength="100" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="note-title" class="col-form-label">Username</label>
+                                                <label for="credential-username" class="col-form-label">Username</label>
                                                 <input type="text" name= "username" class="form-control" id="credential-username" maxlength="30" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="note-title" class="col-form-label">Password</label>
-                                                <input type="text" name= "password" class="form-control" id="credential-password" maxlength="30" required>
+                                                <label for="credential-edit-password" class="col-form-label">Password</label>
+                                                <input type="text" name= "password" class="form-control" id="credential-edit-password" maxlength="30" required>
                                             </div>
                                             <button id="credentialSubmit" type="submit" class="d-none"></button>
                                         </form>
@@ -238,7 +238,7 @@
                         <p id="credentialOperationMessageString" th:text="${credentialOperationMessage}"></p>
                     </div>
                     <div class="modal-footer">
-                        <button id="credentialsModalCloseButton" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="credentialOperationModalCloseButton" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -314,7 +314,7 @@
                 $('#credential-id').val(credentialId ? credentialId : '');
                 $('#credential-url').val(url ? url : '');
                 $('#credential-username').val(username ? username : '');
-                $('#credential-password').val(password ? password : '');
+                $('#credential-edit-password').val(password ? password : '');
                 $('#credentialModal').modal('show');
             }
         </script>

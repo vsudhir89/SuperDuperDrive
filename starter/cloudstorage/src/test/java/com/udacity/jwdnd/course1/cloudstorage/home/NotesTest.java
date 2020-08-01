@@ -60,33 +60,33 @@ public class NotesTest {
 
     @Test
     @Order(1)
-    public void testCreateNoteShown() {
+    public void testCreateNoteShownSuccessfully() {
 	setupUserAndLandOnNotesTab();
-        waitTwoSeconds();
+	waitTwoSeconds();
 
-        createNote();
+	createNote();
 
 	noteTabPage.clickNotesTab();
 	waitTwoSeconds();
 
 	waitAndRetrieveWebElement("note-title");
 
-	assertEquals(noteTabPage.getNoteTitleText().getText(), "First Note");
+	assertEquals("First Note", noteTabPage.getNoteTitleText().getText());
     }
 
     @Test
     @Order(2)
-    public void testCreatedNoteEditTitleShown() {
+    public void testEditNoteTitleAndEditedTitleShownSuccessfully() {
 	waitTwoSeconds();
 	waitAndRetrieveWebElement("backToLoginLink").click();
 	loginWithDefaultUser();
 
 	waitAndRetrieveWebElement("nav-notes-tab").click();
 	waitTwoSeconds();
-        assertTrue(waitAndRetrieveWebElement("noteEditButton").isDisplayed());
+	assertTrue(waitAndRetrieveWebElement("noteEditButton").isDisplayed());
 
-        waitAndRetrieveWebElement("noteEditButton").click();
-        waitTwoSeconds();
+	waitAndRetrieveWebElement("noteEditButton").click();
+	waitTwoSeconds();
 
 	waitAndRetrieveWebElement("note-title").clear();
 	waitTwoSeconds();
@@ -101,14 +101,14 @@ public class NotesTest {
 
 	waitAndRetrieveWebElement("note-title");
 
-	assertEquals(noteTabPage.getNoteTitleText().getText(), "First Note Edit");
+	assertEquals("First Note Edit", noteTabPage.getNoteTitleText().getText());
 
     }
 
     @Test
     @Order(3)
-    public void testDeleteOperationNoteNotShown() {
-        waitTwoSeconds();
+    public void testDeleteNoteFromListAndNoteNotShown() {
+	waitTwoSeconds();
 	waitAndRetrieveWebElement("backToLoginLink").click();
 	loginWithDefaultUser();
 
@@ -159,7 +159,7 @@ public class NotesTest {
     }
 
     private void loginWithDefaultUser() {
-        waitTwoSeconds();
+	waitTwoSeconds();
 	waitAndRetrieveWebElement("inputUsername").sendKeys("sudhirv89");
 
 	waitTwoSeconds();
